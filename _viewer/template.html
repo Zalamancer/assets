@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asset Library</title>
+<style>
+  :root{
+    --bg:#09090b; --panel:#18181b; --panel2:#1f1f23; --border:rgba(255,255,255,.08);
+    --border2:rgba(255,255,255,.14); --text:#e4e4e7; --muted:#a1a1aa; --dim:#71717a;
+    --accent:#22c55e; --accent-dim:rgba(34,197,94,.16); --shadow:0 8px 30px rgba(0,0,0,.5);
+    --thumb:120px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--bg); color:var(--text); font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    display:flex; flex-direction:column; height:100vh; overflow:hidden;
+  }
+  button{font:inherit; color:inherit; cursor:pointer; background:none; border:none}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:#3f3f46;border-radius:6px}
+  ::-webkit-scrollbar-track{background:transparent}
+
+  /* ---------- top bar ---------- */
+  header{flex:none; border-bottom:1px solid var(--border); background:var(--panel)}
+  .topbar{display:flex; align-items:center; gap:14px; padding:10px 16px; flex-wrap:wrap}
+  .brand{display:flex; align-items:center; gap:10px; font-weight:700; font-size:15px; white-space:nowrap}
+  .brand .dot{width:10px;height:10px;border-radius:3px;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+  .brand small{color:var(--dim); font-weight:500}
+  .search{flex:1; position:relative; min-width:200px; max-width:520px}
+  .search input{
+    width:100%; padding:9px 34px 9px 34px; border-radius:10px; background:var(--bg);
+    border:1px solid var(--border); color:var(--text); outline:none;
+  }
+  .search input:focus{border-color:var(--border2)}
+  .search .ic{position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--dim)}
+  .search .clr{position:absolute; right:8px; top:50%; transform:translateY(-50%); color:var(--dim); padding:4px; display:none}
+  .controls{display:flex; align-items:center; gap:6px; margin-left:auto; flex-wrap:wrap}
+  .ctl{display:flex; align-items:center; gap:7px; padding:7px 11px; border-radius:9px; border:1px solid var(--border); background:var(--bg); color:var(--muted); font-size:13px; white-space:nowrap}
+  .ctl:hover{border-color:var(--border2); color:var(--text)}
+  .ctl.on{background:var(--accent-dim); border-color:var(--accent); color:#bbf7d0}
+  .ctl input[type=range]{accent-color:var(--accent); width:90px}
+
+  /* ---------- pack nav ---------- */
+  .packs{display:flex; gap:8px; padding:0 16px 12px; overflow-x:auto}
+  .pack{
+    flex:none; display:flex; align-items:center; gap:9px; padding:9px 14px; border-radius:11px;
+    border:1px solid var(--border); background:var(--bg); color:var(--muted); transition:.12s;
+  }
+  .pack:hover{border-color:var(--border2); color:var(--text)}
+  .pack.on{background:var(--accent-dim); border-color:var(--accent); color:#fff}
+  .pack .nm{font-weight:600; font-size:13px; white-space:nowrap}
+  .pack .ct{font-size:11px; color:var(--dim); background:rgba(255,255,255,.06); padding:1px 7px; border-radius:20px}
+  .pack.on .ct{color:#bbf7d0; background:rgba(34,197,94,.2)}
+
+  /* ---------- body split ---------- */
+  .body{flex:1; display:flex; min-height:0}
+  aside{
+    width:280px; flex:none; border-right:1px solid var(--border); background:var(--panel);
+    overflow:auto; padding:10px 8px;
+  }
+  aside.hidden{display:none}
+  .tree-row{
+    display:flex; align-items:center; gap:5px; padding:5px 7px; border-radius:7px; cursor:pointer;
+    color:var(--muted); user-select:none; white-space:nowrap;
+  }
+  .tree-row:hover{background:var(--panel2); color:var(--text)}
+  .tree-row.sel{background:var(--accent-dim); color:#fff}
+  .tree-row .tw{width:14px; text-align:center; color:var(--dim); flex:none; font-size:10px}
+  .tree-row .ti{flex:none; opacity:.8}
+  .tree-row .tn{overflow:hidden; text-overflow:ellipsis; font-size:13px}
+  .tree-row .tc{margin-left:auto; font-size:10px; color:var(--dim); padding-left:8px}
+  .tree-children{margin-left:13px; border-left:1px solid var(--border)}
+
+  /* ---------- main ---------- */
+  main{flex:1; display:flex; flex-direction:column; min-width:0}
+  .crumbs{display:flex; align-items:center; gap:4px; flex-wrap:wrap; padding:11px 16px 0; color:var(--dim); font-size:13px}
+  .crumbs b{color:var(--text)}
+  .crumbs a{color:var(--muted); cursor:pointer}
+  .crumbs a:hover{color:var(--text); text-decoration:underline}
+  .crumbs .sep{opacity:.5}
+
+  .subtabs{display:flex; gap:7px; flex-wrap:wrap; padding:10px 16px 4px}
+  .subtab{display:flex;align-items:center;gap:7px; padding:6px 11px; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:var(--muted); font-size:12.5px}
+  .subtab:hover{border-color:var(--border2); color:var(--text)}
+  .subtab .sc{font-size:10px;color:var(--dim)}
+
+  .meta{padding:8px 16px 4px; color:var(--dim); font-size:12.5px; display:flex; gap:14px; align-items:center; flex-wrap:wrap}
+  .meta .hint{color:var(--dim)}
+  .meta .ctl{padding:5px 10px}
+
+  .scroll{flex:1; overflow:auto; padding:8px 16px 60px}
+
+  .files{display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 14px}
+  .file{display:flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid var(--border); border-radius:9px; background:var(--panel); color:var(--muted); text-decoration:none; font-size:12.5px}
+  .file:hover{border-color:var(--border2); color:var(--text)}
+  .file .ft{font-size:10px; text-transform:uppercase; letter-spacing:.04em; padding:1px 6px; border-radius:5px; background:rgba(255,255,255,.07); color:var(--dim)}
+
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(var(--thumb),1fr)); gap:12px}
+  .sentinel{height:1px; grid-column:1/-1}
+  .card{
+    border:1px solid var(--border); border-radius:11px; overflow:hidden; background:var(--panel);
+    cursor:pointer; transition:border-color .12s, transform .12s; content-visibility:auto; contain-intrinsic-size:var(--thumb) calc(var(--thumb) + 50px);
+  }
+  .card:hover{border-color:var(--accent); transform:translateY(-2px)}
+  .thumb{
+    width:100%; height:var(--thumb); display:flex; align-items:center; justify-content:center; padding:8px;
+    background-color:#0c0c0e;
+  }
+  body.checker-on .thumb, body.checker-on .lb-stage{
+    background-image:
+      linear-gradient(45deg,#2a2a2e 25%,transparent 25%),
+      linear-gradient(-45deg,#2a2a2e 25%,transparent 25%),
+      linear-gradient(45deg,transparent 75%,#2a2a2e 75%),
+      linear-gradient(-45deg,transparent 75%,#2a2a2e 75%);
+    background-size:16px 16px; background-position:0 0,0 8px,8px -8px,-8px 0;
+  }
+  body.checker-on .lb-stage{background-size:22px 22px; background-position:0 0,0 11px,11px -11px,-11px 0}
+  .thumb img{max-width:100%; max-height:100%; object-fit:contain}
+  body.pixel .thumb img, body.pixel #lbImg{image-rendering:pixelated}
+  .cap{padding:6px 9px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:2px}
+  .cap .fn{font-size:11.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .cap .sub{font-size:10px; color:var(--dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; cursor:pointer}
+  .cap .sub:hover{color:var(--accent); text-decoration:underline}
+  .cap .dim{font-size:10px; color:var(--dim)}
+
+  .empty{color:var(--dim); padding:40px 16px; text-align:center}
+
+  /* ---------- lightbox ---------- */
+  .lb{position:fixed; inset:0; background:rgba(0,0,0,.88); backdrop-filter:blur(6px); z-index:100; display:none; flex-direction:column}
+  .lb.open{display:flex}
+  .lb-top{display:flex; align-items:center; gap:14px; padding:14px 18px; color:var(--text)}
+  .lb-top .lb-fn{font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .lb-top .lb-path{color:var(--dim); font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1}
+  .lb-top .lb-btn{padding:7px 12px; border-radius:8px; border:1px solid var(--border2); color:var(--muted); text-decoration:none}
+  .lb-top .lb-btn:hover{color:var(--text); border-color:#fff}
+  .lb-stage{flex:1; display:flex; align-items:center; justify-content:center; position:relative; min-height:0; padding:0 60px; background-color:transparent}
+  #lbImg{max-width:100%; max-height:100%; object-fit:contain}
+  .lb-nav{position:absolute; top:50%; transform:translateY(-50%); width:48px; height:48px; border-radius:50%; background:rgba(255,255,255,.08); border:1px solid var(--border2); font-size:22px; color:#fff; display:flex; align-items:center; justify-content:center}
+  .lb-nav:hover{background:rgba(255,255,255,.18)}
+  .lb-prev{left:14px} .lb-next{right:14px}
+  .lb-foot{padding:12px 18px; color:var(--muted); font-size:12.5px; text-align:center; display:flex; gap:18px; justify-content:center; flex-wrap:wrap}
+  .kbd{font-size:11px; color:var(--dim); background:rgba(255,255,255,.06); padding:1px 6px; border-radius:5px; border:1px solid var(--border)}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:720px){
+    aside{position:absolute; z-index:40; height:calc(100% - 0px); box-shadow:var(--shadow)}
+    .controls{width:100%; margin-left:0}
+    .lb-stage{padding:0 8px}
+    .lb-top .lb-path{display:none}
+  }
+</style>
+</head>
+<body class="pixel checker-on">
+
+<header>
+  <div class="topbar">
+    <div class="brand"><span class="dot"></span> Asset Library <small id="totCount"></small></div>
+    <div class="search">
+      <span class="ic">⌕</span>
+      <input id="q" type="text" placeholder="Search all assets by name…  (press /)" autocomplete="off">
+      <button class="clr" id="qClr" title="Clear">✕</button>
+    </div>
+    <div class="controls">
+      <button class="ctl on" id="tgSidebar" title="Toggle folder tree">☰ Tree</button>
+      <button class="ctl on" id="tgChecker" title="Checkerboard background (shows transparency)">▦ Checker</button>
+      <button class="ctl on" id="tgPixel" title="Crisp pixel-art rendering">⊞ Pixel</button>
+      <label class="ctl" title="Thumbnail size">↔ <input id="sz" type="range" min="64" max="320" step="8" value="120"></label>
+    </div>
+  </div>
+  <div class="packs" id="packs"></div>
+</header>
+
+<div class="body">
+  <aside id="sidebar"></aside>
+  <main>
+    <div class="crumbs" id="crumbs"></div>
+    <div class="subtabs" id="subtabs"></div>
+    <div class="meta" id="meta"></div>
+    <div class="scroll" id="scroll">
+      <div class="files" id="files"></div>
+      <div id="content"></div>
+    </div>
+  </main>
+</div>
+
+<!-- lightbox -->
+<div class="lb" id="lb">
+  <div class="lb-top">
+    <span class="lb-fn" id="lbFn"></span>
+    <span class="lb-path" id="lbPath"></span>
+    <button class="lb-btn" id="lbCopy">Copy path</button>
+    <a class="lb-btn" id="lbOpen" target="_blank">Open ↗</a>
+    <button class="lb-btn" id="lbClose">Close ✕</button>
+  </div>
+  <div class="lb-stage" id="lbStage">
+    <button class="lb-nav lb-prev" id="lbPrev">‹</button>
+    <img id="lbImg" alt="">
+    <button class="lb-nav lb-next" id="lbNext">›</button>
+  </div>
+  <div class="lb-foot" id="lbFoot"></div>
+</div>
+
+<script id="manifest" type="application/json">__MANIFEST_JSON__</script>
+<script>
+(function(){
+  "use strict";
+  const M = JSON.parse(document.getElementById('manifest').textContent);
+  const $ = s => document.querySelector(s);
+  const PAGE = 120;
+
+  // encode a relative path (segments may contain spaces / parens)
+  const enc = p => p.split('/').map(encodeURIComponent).join('/');
+  const dirOf = it => it.path.slice(0, it.path.length - it.name.length - 1);
+
+  // ---- state ----
+  let curPack = M.dirs[0] || null;
+  let curNode = curPack;
+  let recursive = false;
+  let displayList = [];          // active grid list (also drives lightbox)
+  let gridObserver = null;       // IntersectionObserver for incremental render
+  const expanded = new Set();    // persisted tree expansion (node objects)
+
+  function iconFor(node){ return node.dirs && node.dirs.length ? '🗀' : '🖿'; }
+
+  // ===== PACK NAV =====
+  function renderPacks(){
+    const el = $('#packs'); el.innerHTML='';
+    M.dirs.forEach(p=>{
+      const b=document.createElement('button');
+      b.className='pack'+(p===curPack?' on':'');
+      b.innerHTML=`<span class="nm"></span><span class="ct">${p.tot}</span>`;
+      b.querySelector('.nm').textContent=p.name;
+      b.onclick=()=>{ $('#q').value=''; $('#qClr').style.display='none'; curPack=p; openNode(p); };
+      el.appendChild(b);
+    });
+    let tot=0,np=0; M.dirs.forEach(p=>{ if(!p.flat){tot+=p.tot; np++;} });
+    $('#totCount').textContent = tot.toLocaleString()+' images · '+np+' packs';
+  }
+
+  // ===== SIDEBAR TREE =====
+  function renderTree(){
+    const el=$('#sidebar'); el.innerHTML='';
+    if(!curPack){return;}
+    el.appendChild(treeNode(curPack, true));
+  }
+  function treeNode(node, isRoot){
+    const wrap=document.createElement('div');
+    const row=document.createElement('div');
+    row.className='tree-row'+(node===curNode?' sel':'');
+    const hasKids = node.dirs && node.dirs.length;
+    const tw=document.createElement('span'); tw.className='tw';
+    let open = isRoot || expanded.has(node) || isAncestor(node, curNode);
+    tw.textContent = hasKids ? (open?'▾':'▸') : '';
+    const ti=document.createElement('span'); ti.className='ti'; ti.textContent=iconFor(node);
+    const tn=document.createElement('span'); tn.className='tn'; tn.textContent=node.name;
+    const tc=document.createElement('span'); tc.className='tc'; tc.textContent=node.tot;
+    row.append(tw,ti,tn,tc);
+    wrap.appendChild(row);
+
+    let kids=null;
+    if(hasKids){
+      kids=document.createElement('div'); kids.className='tree-children';
+      node.dirs.forEach(c=>kids.appendChild(treeNode(c, false)));
+      kids.style.display = open?'block':'none';
+      wrap.appendChild(kids);
+    }
+    tw.onclick=e=>{ e.stopPropagation(); if(!hasKids)return; open=!open;
+      if(open) expanded.add(node); else expanded.delete(node);
+      kids.style.display=open?'block':'none'; tw.textContent=open?'▾':'▸'; };
+    row.onclick=()=>openNode(node);
+    return wrap;
+  }
+  function isAncestor(anc, node){
+    if(!anc.dirs) return false;
+    for(const c of anc.dirs){ if(c===node||isAncestor(c,node)) return true; }
+    return false;
+  }
+  function nodeByPath(path){
+    let found=null;
+    (function dfs(n){ if(found)return; if(n.path===path){found=n;return;} if(n.dirs)n.dirs.forEach(dfs); })
+      ({dirs:M.dirs, path:null});
+    return found;
+  }
+  function packOf(node){
+    for(const p of M.dirs){ if(p===node||isAncestor(p,node)) return p; }
+    return curPack;
+  }
+
+  // ===== BREADCRUMB =====
+  function pathTo(node){
+    const chain=[];
+    (function dfs(n, trail){
+      const t=trail.concat(n);
+      if(n===node){chain.push(...t); return true;}
+      if(n.dirs) for(const c of n.dirs) if(dfs(c,t)) return true;
+      return false;
+    })(curPack,[]);
+    return chain;
+  }
+  function renderCrumbs(){
+    const el=$('#crumbs'); el.innerHTML='';
+    pathTo(curNode).forEach((n,i)=>{
+      if(i){const s=document.createElement('span'); s.className='sep'; s.textContent='/'; el.appendChild(s);}
+      if(n===curNode){const b=document.createElement('b'); b.textContent=n.name; el.appendChild(b);}
+      else {const a=document.createElement('a'); a.textContent=n.name; a.onclick=()=>openNode(n); el.appendChild(a);}
+    });
+  }
+
+  // ===== SUBFOLDER TABS =====
+  function renderSubtabs(){
+    const el=$('#subtabs'); el.innerHTML='';
+    if(!curNode.dirs || !curNode.dirs.length){return;}
+    curNode.dirs.forEach(c=>{
+      const b=document.createElement('button'); b.className='subtab';
+      b.innerHTML=`🗀 <span></span> <span class="sc">${c.tot}</span>`;
+      b.querySelector('span').textContent=c.name;
+      b.onclick=()=>openNode(c);
+      el.appendChild(b);
+    });
+  }
+
+  // ===== GRID (incremental / windowed) =====
+  function gatherImgs(node, into){
+    (node.imgs||[]).forEach(n=> node.flat
+      ? into.push({name:n.split('/').pop(), path:n})
+      : into.push({name:n, path:node.path+'/'+n}));
+    if(recursive && node.dirs) node.dirs.forEach(c=>gatherImgs(c,into));
+  }
+  function makeCard(item, idx, showSub){
+    const c=document.createElement('div'); c.className='card'; c.dataset.idx=idx;
+    const t=document.createElement('div'); t.className='thumb';
+    const img=document.createElement('img'); img.loading='lazy'; img.alt=item.name;
+    const cap=document.createElement('div'); cap.className='cap';
+    const fn=document.createElement('div'); fn.className='fn'; fn.textContent=item.name; fn.title=item.name;
+    const dim=document.createElement('div'); dim.className='dim'; dim.textContent='…';
+    img.addEventListener('load',()=>{ dim.textContent=img.naturalWidth+' × '+img.naturalHeight; },{once:true});
+    img.addEventListener('error',()=>{ dim.textContent='⚠ not found'; t.style.opacity=.4; },{once:true});
+    img.src=enc(item.path);                 // src set AFTER listeners attach
+    t.appendChild(img);
+    cap.appendChild(fn);
+    if(showSub){
+      const sub=document.createElement('div'); sub.className='sub';
+      const d=dirOf(item); sub.textContent=d; sub.title='Open '+d; sub.dataset.path=d;
+      cap.appendChild(sub);
+    }
+    cap.appendChild(dim);
+    c.append(t,cap);
+    return c;
+  }
+  function renderGridInto(container, list, showSub){
+    if(gridObserver){ gridObserver.disconnect(); gridObserver=null; }
+    container.innerHTML='';
+    displayList = list;
+    if(!list.length) return false;
+    const grid=document.createElement('div'); grid.className='grid';
+    container.appendChild(grid);
+    let rendered=0, sentinel=null;
+    function appendBatch(){
+      const end=Math.min(rendered+PAGE, list.length);
+      const frag=document.createDocumentFragment();
+      for(let i=rendered;i<end;i++) frag.appendChild(makeCard(list[i], i, showSub));
+      grid.appendChild(frag);
+      rendered=end;
+      if(rendered>=list.length && sentinel){ sentinel.remove(); sentinel=null;
+        if(gridObserver){gridObserver.disconnect(); gridObserver=null;} }
+    }
+    appendBatch();
+    if(rendered<list.length){
+      sentinel=document.createElement('div'); sentinel.className='sentinel';
+      grid.appendChild(sentinel);
+      gridObserver=new IntersectionObserver(es=>{ for(const e of es) if(e.isIntersecting) appendBatch(); },
+        {root:$('#scroll'), rootMargin:'800px'});
+      gridObserver.observe(sentinel);
+    }
+    grid.onclick=e=>{
+      const sub=e.target.closest('.sub');
+      if(sub){ gotoFolder(sub.dataset.path); return; }
+      const card=e.target.closest('.card');
+      if(card) openLightbox(+card.dataset.idx, list);
+    };
+    return true;
+  }
+
+  function renderFiles(node){
+    const el=$('#files'); el.innerHTML='';
+    const fl=node.files||[];
+    if(!fl.length){el.style.display='none'; return;}
+    el.style.display='flex';
+    fl.forEach(f=>{
+      const a=document.createElement('a'); a.className='file'; a.href=enc(node.path+'/'+f.n); a.target='_blank';
+      a.innerHTML=`<span class="ft">${f.t}</span><span></span>`;
+      a.querySelector('span:last-child').textContent=f.n;
+      el.appendChild(a);
+    });
+  }
+
+  function renderGrid(){
+    const wrap=$('#content');
+    renderFiles(curNode);
+    const items=[]; gatherImgs(curNode, items);
+    const ok=renderGridInto(wrap, items, recursive || !!curNode.flat);
+    if(!ok){
+      const fc=(curNode.files||[]).length;
+      wrap.innerHTML = fc
+        ? '<div class="empty">No images in this folder — '+fc+' file'+(fc>1?'s':'')+' only, shown above.</div>'
+        : '<div class="empty">No images directly in this folder.<br>Pick a subfolder above, or turn on “Include subfolders”.</div>';
+    }
+  }
+
+  function renderMeta(){
+    const el=$('#meta'); el.innerHTML='';
+    const direct=(curNode.imgs||[]).length;
+    const c=document.createElement('span');
+    c.innerHTML=`<b style="color:var(--text)">${displayList.length.toLocaleString()}</b> images shown`+
+      (curNode.tot!==direct?` · ${curNode.tot.toLocaleString()} in subtree`:'');
+    el.appendChild(c);
+    if(curNode.dirs && curNode.dirs.length){
+      const lbl=document.createElement('button'); lbl.className='ctl'+(recursive?' on':'');
+      lbl.textContent=(recursive?'☑':'☐')+' Include subfolders';
+      lbl.onclick=()=>{recursive=!recursive; renderGrid(); renderMeta();};
+      el.appendChild(lbl);
+    }
+    const hint=document.createElement('span'); hint.className='hint'; hint.textContent='Click any image to enlarge';
+    el.appendChild(hint);
+  }
+
+  // ===== NAVIGATE =====
+  function openNode(node){
+    curNode=node; curPack=packOf(node); recursive=false;
+    // keep ancestors expanded so the selection stays visible after future renders
+    let p=node; while(p){ if(p!==curPack) expanded.add(p); p=parentOf(p); }
+    renderPacks(); renderTree(); renderCrumbs(); renderSubtabs();
+    renderGrid(); renderMeta();
+    $('#scroll').scrollTop=0;
+  }
+  function parentOf(node){
+    let par=null;
+    (function dfs(n){ if(par)return; if(n.dirs) for(const c of n.dirs){ if(c===node){par=n;return;} dfs(c);} })(curPack);
+    return par;
+  }
+  function gotoFolder(path){
+    const n=nodeByPath(path); if(!n)return;
+    $('#q').value=''; $('#qClr').style.display='none';
+    openNode(n);
+  }
+
+  // ===== SEARCH =====
+  function runSearch(term){
+    term=term.trim().toLowerCase();
+    if(!term){ openNode(curNode); return; }
+    $('#files').style.display='none'; $('#subtabs').innerHTML=''; $('#crumbs').innerHTML='';
+    const all=[]; const folders=new Set();
+    (function walk(node){
+      (node.imgs||[]).forEach(n=>{ if(n.toLowerCase().includes(term)){ all.push({name:n, path:node.path+'/'+n}); folders.add(node.path); } });
+      if(node.dirs) node.dirs.forEach(walk);
+    })({dirs:M.dirs, imgs:[], path:''});
+    const ok=renderGridInto($('#content'), all, true);
+    $('#meta').innerHTML = all.length
+      ? `<span><b style="color:var(--text)">${all.length.toLocaleString()}</b> matches for “${term}” across ${folders.size} folders</span><span class="hint">Click a folder line to jump there · click an image to enlarge</span>`
+      : `<span>No assets match “${term}”.</span>`;
+    if(!ok) $('#content').innerHTML='<div class="empty">No assets match “'+term+'”.</div>';
+    $('#scroll').scrollTop=0;
+  }
+
+  // ===== LIGHTBOX =====
+  let curList=[], lbIndex=-1;
+  function openLightbox(idx, list){
+    curList=list; lbIndex=idx; showLb(); $('#lb').classList.add('open');
+  }
+  function showLb(){
+    const it=curList[lbIndex]; if(!it)return;
+    const img=$('#lbImg');
+    $('#lbFn').textContent=it.name;
+    $('#lbPath').textContent=it.path;
+    $('#lbOpen').href=enc(it.path);
+    const hints='<span class="kbd">←</span> <span class="kbd">→</span> navigate · <span class="kbd">Esc</span> close · <span class="kbd">P</span> pixel';
+    $('#lbFoot').innerHTML='<span id="lbDim">…</span><span>'+(lbIndex+1)+' / '+curList.length+'</span><span>'+hints+'</span>';
+    img.onload=function(){ const d=document.getElementById('lbDim'); if(d) d.textContent=this.naturalWidth+' × '+this.naturalHeight+'px'; };
+    img.onerror=function(){ const d=document.getElementById('lbDim'); if(d) d.textContent='⚠ file not found'; };
+    img.src=enc(it.path);
+  }
+  function lbStep(d){ if(!curList.length)return; lbIndex=(lbIndex+d+curList.length)%curList.length; showLb(); }
+  function closeLb(){ $('#lb').classList.remove('open'); $('#lbImg').removeAttribute('src'); }
+
+  // ===== CONTROLS =====
+  let checkerOn=true;
+  $('#tgChecker').onclick=function(){ checkerOn=!checkerOn; this.classList.toggle('on',checkerOn);
+    document.body.classList.toggle('checker-on',checkerOn); };
+  $('#tgPixel').onclick=function(){ document.body.classList.toggle('pixel'); this.classList.toggle('on',document.body.classList.contains('pixel')); };
+  $('#tgSidebar').onclick=function(){ $('#sidebar').classList.toggle('hidden'); this.classList.toggle('on'); };
+  $('#sz').oninput=function(){ document.documentElement.style.setProperty('--thumb',this.value+'px'); };
+
+  const q=$('#q'), qClr=$('#qClr'); let qt=null;
+  q.oninput=function(){ qClr.style.display=this.value?'block':'none'; clearTimeout(qt); const v=this.value; qt=setTimeout(()=>runSearch(v),160); };
+  qClr.onclick=()=>{ q.value=''; qClr.style.display='none'; runSearch(''); q.focus(); };
+
+  $('#lbClose').onclick=closeLb; $('#lbPrev').onclick=()=>lbStep(-1); $('#lbNext').onclick=()=>lbStep(1);
+  $('#lb').onclick=e=>{ if(e.target.id==='lb'||e.target.id==='lbStage') closeLb(); };
+  $('#lbCopy').onclick=function(){ const t=curList[lbIndex]; if(!t)return;
+    if(navigator.clipboard) navigator.clipboard.writeText(t.path);
+    this.textContent='Copied!'; setTimeout(()=>this.textContent='Copy path',1200); };
+
+  document.addEventListener('keydown',e=>{
+    if($('#lb').classList.contains('open')){
+      if(e.key==='Escape')closeLb(); else if(e.key==='ArrowLeft')lbStep(-1);
+      else if(e.key==='ArrowRight')lbStep(1); else if(e.key==='p'||e.key==='P')$('#tgPixel').click();
+      return;
+    }
+    if(e.key==='/' && document.activeElement!==q){ e.preventDefault(); q.focus(); }
+    else if(e.key==='Escape' && document.activeElement===q){ q.blur(); }
+  });
+
+  // ===== INIT =====
+  openNode(curPack);
+})();
+</script>
+</body>
+</html>
